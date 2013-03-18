@@ -5,6 +5,11 @@
 *.war
 *.ear
 
+# Antlr4 ignore files #
+*.class
+*.java
+
+
 # LaTeX generated files and automatic backups #
 *.aux
 *.bbl
