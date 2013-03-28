@@ -42,3 +42,6 @@
 *.for
 auto
 *~
+
+.project
+
