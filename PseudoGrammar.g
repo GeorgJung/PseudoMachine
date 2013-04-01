@@ -2,7 +2,9 @@ grammar PseudoGrammar;
 
 
 
-algorithum  : 'algorithum' ID 'inputs' declist 'outputs' declist 'localvar' declist 'begin' statement;
+algorithum  : 'algorithum' ID inputs? outputs? 'localvar' declist 'begin' statement;
+inputs  : 'inputs' declist ;
+outputs : 'outputs' declist ;
 index   :  '[' (integer | statement) ']';
 indexing   : '[' value '...' value ']' ;
 idlist  : ID ',' idlist  | ID ;
