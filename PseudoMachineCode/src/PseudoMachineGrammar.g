@@ -4,7 +4,7 @@ options {
   language = Java;
 }
 
-algorithum  : 'algorithum' ID ('inputs' declist)? ('outputs' declist)? 'localvar' declist 'begin' statement;
+algorithm  : 'algorithm' ID ('inputs' declist)? ('outputs' declist)? 'localvar' declist 'begin' statement;
 index   :  '[' (integer | statement) ']';
 indexing   : '[' value '...' value ']' ;
 idlist  : ID ',' idlist  | ID ;
