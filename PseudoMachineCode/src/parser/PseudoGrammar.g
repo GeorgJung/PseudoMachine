@@ -1,11 +1,12 @@
-grammar PseudoMachineGrammar;
+grammar PseudoGrammar;
 
 options {
   language = Java;
+  backtrack = true;
 }
 
 algorithm  : 'algorithm' ID ('inputs' declist)? ('outputs' declist)? 'localvar' declist 'begin' statement;
-index   :  '[' (integer | statement) ']';
+index   :  '[' (INTEGER | statement) ']';
 indexing   : '[' value '...' value ']' ;
 idlist  : ID ',' idlist  | ID ;
 assign  : 'set' ID 'to' ID;
@@ -31,15 +32,10 @@ boolexpr : arithexpr ('=' | '<>' | '<' | '>' | '<=' | '>=') arithexpr;
 arithexpr : multiplication ('+' | '-') arithexpr | multiplication;
 multiplication  : negexp ('*' | '/' | '%') multiplication | negexp;
 negexp :'-' value | value | '('arithexpr')' ;
-value : ID index | integer ;
+value : ID index | INTEGER ;
 dataexpr : ' " '  ' " ';
-integer  :   '0'-'9'+;
-NEWLINE: '\r'? '\n' ;
-WS : [ \t\r\n]+ -> skip ;
-ID : 'a'-'z'+ ;
 
-
-
-//INT :   [0-9]+ ;
-//NEWLINE:'\r'? '\n' ;
-//WS : [ \t\r\n]+ -> skip ;
+INTEGER  :   ('0'..'9')+ ;
+//NEWLINE: '\r'? '\n' ;
+WS : (' ' | '\t' | '\r' | '\n' )+ { $setType(Token.SKIP); } ;
+ID : ('a'..'z')+ ;
