@@ -37,5 +37,5 @@ dataexpr : ' " '  ' " ';
 
 INTEGER  :   ('1'..'9')('0'..'9')* ;
 //NEWLINE: '\r'? '\n' ;
-WS : (' ' | '\t' | '\r' | '\n' )+ { $setType(Token.SKIP); } ;
+WS : (' ' | '\t' | '\r' | '\n' )+ { $channel=HIDDEN; } ;
 ID : ('a'..'z')+ ;
