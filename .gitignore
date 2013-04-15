@@ -6,8 +6,7 @@
 *.ear
 
 # Antlr4 ignore files #
-*.class
-*.java
+*.tokens
 
 
 # LaTeX generated files and automatic backups #
