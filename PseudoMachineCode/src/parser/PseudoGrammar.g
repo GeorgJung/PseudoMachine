@@ -35,7 +35,7 @@ negexp :'-' value | value | '('arithexpr')' ;
 value : ID index | INTEGER ;
 dataexpr : ' " '  ' " ';
 
-INTEGER  :   ('0'..'9')+ ;
+INTEGER  :   ('1'..'9')('0'..'9')* ;
 //NEWLINE: '\r'? '\n' ;
 WS : (' ' | '\t' | '\r' | '\n' )+ { $setType(Token.SKIP); } ;
 ID : ('a'..'z')+ ;
