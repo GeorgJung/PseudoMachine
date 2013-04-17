@@ -5,7 +5,7 @@ options {
   backtrack = true;
 }
 
-algorithm  : 'algorithm' ID ('inputs' declist)? ('outputs' declist)? ('localvar' declist)? 'begin' statement 'end';
+algorithm  : 'algorithm' ID ('inputs' declist)? ('outputs' declist)? ('localvar' declist)? 'begin' (statement ';')+ 'end';
 index   :  '[' (INTEGER | statement) ']';
 indexing   : '[' value '...' value ']' ;
 idlist  : ID ',' idlist  | ID ;
