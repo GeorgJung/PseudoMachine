@@ -13,7 +13,7 @@ assign  : 'set' ID 'to' ID;
 assignlist  : assign ',' assignlist | assign ;
 decl  :  'number'ID (indexing)? | 'data' ID (indexing)? ;
 declist : decl ',' declist  | decl ;
-statement : (assignment  | conditional | iterative | sequential | invocation | print | read) ;
+statement : (assignment  | conditional | iterative  | invocation | print | read) ;
 
 assignment : 'set' ID (index)? 'to' (arithexpr | dataexpr) ; 
 sequential : statement ';' statement;
