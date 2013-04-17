@@ -36,8 +36,11 @@ conjunction  : negation 'and' conjunction | negation;
 negation : 'not' atom | atom;
 atom : boolexpr | '('disjunction ')' ;
 boolexpr : arithexpr ('=' | '<>' | '<' | '>' | '<=' | '>=') arithexpr;
-arithexpr returns [int value] : multiplication ('+' | '-') arithexpr | e=multiplication  {$value = $e.value;};
-multiplication returns [int value] : negexp ('*' | '/' | '%') multiplication | e=negexp {$value = $e.value;} ;
+arithexpr returns [int value] : e = multiplication {$value = $e.value;} ('+' s=arithexpr {$value += $s.value;} | '-' s=arithexpr {$value -= $s.value;}) | e=multiplication  {$value = $e.value;};
+multiplication returns [int value] : e=negexp {$value = $e.value;} ('*' s=multiplication {$value *= $s.value;}| '/' s=multiplication {$value /= $s.value;} | '%' s=multiplication {$value %= $s.value;}) | e=negexp {$value = $e.value;} ;
+
+
+
 negexp returns [int value]:'-' valuee | '('arithexpr')' | e=valuee {$value = $e.value;}  ;
 valuee returns [int value] : ID  {Integer v = (Integer)memory.get($ID.text);
                                    if ( v!=null ) $value = v.intValue();
@@ -47,6 +50,5 @@ dataexpr : ' " '  ' " ';
 INTEGER  :   ('1'..'9')('0'..'9')* ;
 //NEWLINE: '\r'? '\n' ;
 //WS : (' ' | '\t' | '\r' | '\n' )+ { $channel=HIDDEN; } ;
-WS : [ \t\r\n]+ -> skip ;
+WS : (' ' | '\t' | '\r' | '\n' )+ { $setType(Token.SKIP); } ;
 ID : ('a'..'z' | 'A'..'Z')+ ;
-
