@@ -28,7 +28,7 @@ morestatement : ';' statement | ;
 alternative : 'else' statement 'endif' | 'endif' ;
 conditional : 'if' condition 'then' statement alternative ;
 iterative  : 'while' condition 'do' statement 'loop';
-print : 'print' (dataexpr | arithexpr) {System.out.println($arithexpr.value);};
+print : 'print' (dataexpr | arithexpr) {System.out.println($arithexpr.value);} | 'print' '"'ID'"' {System.out.println($ID.text);} ;
 read : 'read' idlist;
 invocation  : 'run' ID 'inputs' assignlist 'outputs' assignlist 'done';
 condition : disjunction ;
