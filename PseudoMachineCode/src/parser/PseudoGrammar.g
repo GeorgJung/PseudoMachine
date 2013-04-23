@@ -1,4 +1,7 @@
- grammar PseudoGrammar;
+ grammar test;
+ options {
+  language = Java;
+}
 @header {
 import java.util.HashMap;
 }
@@ -8,38 +11,37 @@ import java.util.HashMap;
 HashMap memory = new HashMap();
 }
 
-options {
-  language = Java;
-  backtrack = true;
-}
 
-algorithm  : 'algorithm' ID ('inputs' declist)? ('outputs' declist)? ('localvar' declist)? 'begin' (statement ';')+ 'end' ;
-index   :  '[' (INTEGER | statement) ']';
+algorithm  : 'algorithm' ID ('inputs' declist)? ('outputs' declist)? ('localvar' declist)? 'begin' statement  'end' ;
+index   :  '[' arithexpr ']';
 indexing   : '[' valuee '...' valuee ']' ;
 idlist  : ID ',' idlist  | ID ;
 assign  : 'set' ID 'to' ID;
 assignlist  : assign ',' assignlist | assign ;
 decl  :  'number'ID (indexing)? | 'data' ID (indexing)? ;
-declist : decl ',' declist  | decl ;
-statement : (assignment  | conditional | iterative | invocation | read | print ) ;
+declist : decl (',' declist)? ;
+statement : conditional morestatement | iterative morestatement | read morestatement | invocation morestatement | print morestatement | assignment morestatement ;
 
 assignment : 'set' ID (index)? 'to' (arithexpr | dataexpr) {memory.put($ID.text, new Integer($arithexpr.value));} ; 
-sequential : statement ';' statement;
-conditional : 'if' condition 'then' statement 'else' statement 'endif' | 'if' condition 'then' statement 'endif';
+morestatement : ';' statement | ; 
+// Remember to write about the necessity of left-factorizing the mutually left-recursive setting of having the sequential as a control flow construct as theoretically sound. Rule: "sequential : statement  | morestatement ;"
+alternative : 'else' statement 'endif' | 'endif' ;
+conditional : 'if' condition 'then' statement alternative ;
 iterative  : 'while' condition 'do' statement 'loop';
 print : 'print' (dataexpr | arithexpr) {System.out.println($arithexpr.value);};
 read : 'read' idlist;
-invocation  : 'run' ID ('inputs' assignlist)? ('outputs' assignlist)? 'done';
+invocation  : 'run' ID 'inputs' assignlist 'outputs' assignlist 'done';
 condition : disjunction ;
-disjunction : conjunction 'or' disjunction | conjunction;
-conjunction  : negation 'and' conjunction | negation;
-negation : 'not' atom | atom;
-atom : boolexpr | '('disjunction ')' ;
+disjunction : conjunction ( 'or ' disjunction )? ; // change all left-factorized alternatives back to question mark syntax (maybe except for morestatement)
+conjunction  : negation ( 'and' negation  )? ;
+negation : 'not' atom | atom ;
+//atom options { backtrack = true ; } : boolexpr | '(' disjunction ')' ;
+atom  : boolexpr | '(' disjunction ')' ;
 boolexpr : arithexpr ('=' | '<>' | '<' | '>' | '<=' | '>=') arithexpr;
-arithexpr returns [int value] : e = multiplication {$value = $e.value;} ('+' s=arithexpr {$value += $s.value;} | '-' s=arithexpr {$value -= $s.value;}) | e=multiplication  {$value = $e.value;};
-multiplication returns [int value] : e=negexp {$value = $e.value;} ('*' s=multiplication {$value *= $s.value;}| '/' s=multiplication {$value /= $s.value;} | '%' s=multiplication {$value %= $s.value;}) | e=negexp {$value = $e.value;} ;
+//morearithexpr returns [int value] : ('+' s=arithexpr {$value += $s.value;} | '-' s=arithexpr {$value -= $s.value;})  | ; 
+arithexpr returns [int value] : e = multiplication {$value = $e.value;} (('+' s=arithexpr {$value += $s.value;} | '-' s=arithexpr {$value -= $s.value;}) )? ;
 
-
+multiplication returns [int value]  : e=negexp {$value = $e.value;}  ( ('*' s=multiplication {$value *= $s.value;}| '/' s=multiplication {$value /= $s.value;} | '%' s=multiplication {$value %= $s.value;}))? ;
 
 negexp returns [int value]:'-' valuee | '('arithexpr')' | e=valuee {$value = $e.value;}  ;
 valuee returns [int value] : ID  {Integer v = (Integer)memory.get($ID.text);
@@ -49,6 +51,7 @@ dataexpr : ' " '  ' " ';
 
 INTEGER  :   ('1'..'9')('0'..'9')* ;
 //NEWLINE: '\r'? '\n' ;
-//WS : (' ' | '\t' | '\r' | '\n' )+ { $channel=HIDDEN; } ;
-WS : (' ' | '\t' | '\r' | '\n' )+ { $setType(Token.SKIP); } ;
+WS : (' ' | '\t' | '\r' | '\n' )+ { $channel=HIDDEN; } ;
+//WS : [ \t\r\n]+ -> skip ;
 ID : ('a'..'z' | 'A'..'Z')+ ;
+
