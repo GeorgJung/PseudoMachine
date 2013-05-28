@@ -12,7 +12,7 @@ public class MultiplicationNode extends ArithmeticExpressionNode {
 	char operator;
 
 	/**
-	 * @param location
+	 * @param location location of the Expression in the source code
 	 */
 	protected MultiplicationNode(SourceLocator location) {
 		super(location);
