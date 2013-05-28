@@ -4,7 +4,7 @@ package syntaxTree;
  * @author Samy
  *
  */
-public class PrintNode extends Node {
+public class PrintNode extends StatementNode {
 	ArithmeticExpressionNode n;
 	protected PrintNode (SourceLocator location) {
 		super(location);
@@ -21,8 +21,11 @@ public class PrintNode extends Node {
 	protected PrintNode (SourceLocator location, ArithmeticExpressionNode n){
 		super(location);
 		this.n=n;
-		System.out.println(n.evaluate());
-		
+	}
+
+	@Override
+	public void execute() throws Exception {
+		System.out.println(n.evaluate());		
 	}
 	
 }

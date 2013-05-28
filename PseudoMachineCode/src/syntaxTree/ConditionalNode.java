@@ -4,62 +4,34 @@
 package syntaxTree;
 
 /**
- * @author Tarek
+ * @author jung
  * 
  */
-public class ConditionalNode extends BooleanExpressionNode {
-	BooleanExpressionNode n;
-	
+public class ConditionalNode extends StatementNode {
+	BooleanExpressionNode condition;
+	StatementNode tBranch, fBranch;
 
 	/**
 	 * @param location
 	 */
-	protected BooleanNode(SourceLocator location) {
+	protected ConditionalNode(SourceLocator location) {
 		super(location);
 	}
 
-	/**
-	 * 
-	 * @param location
-	 * @param expression
-	 */
-	public BooleanNode(SourceLocator location,
-			ArithmeticExpressionNode op1, ArithmeticExpressionNode op1, chat operator ) {
+	public ConditionalNode(SourceLocator location,
+			BooleanExpressionNode condition, StatementNode tBranch,
+			StatementNode fBranch) {
 		super(location);
-		this.op1=op1;
-		this.op2=op2;
-		this.operator = operator;
+		this.condition = condition;
+		this.tBranch = tBranch;
+		this.fBranch = fBranch;
 	}
 
 	@Override
-	public boolean evaluateBoolean() throws Exception {
-		switch (operator) {
-		case '=': if(op1.evaluate() == op2.evaluate()){
-               return true;
-               } else {
-            	   return false;
-            	   }
-		case '<':  if(op1.evaluate() < op2.evaluate()){
-            return true;
-            } else {
-         	   return false;
-         	   }
-		case '>':  if(op1.evaluate() > op2.evaluate()){
-            return true;
-            } else {
-         	   return false;
-         	   }
-		case '<=':  if(op1.evaluate() <= op2.evaluate()){
-            return true;
-            } else {
-         	   return false;
-         	   }
-		case '>=':  if(op1.evaluate() >= op2.evaluate()){
-            return true;
-            } else {
-         	   return false;
-         	   }
-		default: throw new Exception("unknown operator");
-		}
+	public void execute() throws Exception {
+		if (condition.evaluateBoolean())
+			tBranch.execute();
+		else if (fBranch != null)
+			fBranch.execute();
 	}
 }

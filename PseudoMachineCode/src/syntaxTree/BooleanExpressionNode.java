@@ -7,8 +7,8 @@ public abstract class BooleanExpressionNode extends Node {
 
 	/**
 	 *
-	 *  Evaluate the booleann result of an expression 
+	 *  Evaluate the boolean result of an expression 
 	 * 
 	 */
-	public abstract int evaluateBoolean() throws Exception;
+	public abstract boolean evaluateBoolean() throws Exception;
 }

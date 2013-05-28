@@ -13,9 +13,9 @@ public class AssignmentNode extends Node {
 	/**
 	 * @param Assign a variable to an Identifier
 	 */
-	protected AssignmentNode(SourceLocator location, String id, ArithmeticExpressionNode a) {
+	public AssignmentNode(SourceLocator location, String id, ArithmeticExpressionNode a) throws Exception {
 		super(location);
-		memory.put($ID.text, new Integer(a.evaluate());
+		memory.put(id, new Integer(a.evaluate()));
 	}
 
 }

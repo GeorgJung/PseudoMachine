@@ -1,5 +1,7 @@
-public class LoopNode extends Node {
-    BooleanNode condition;
+package syntaxTree;
+
+public class LoopNode extends StatementNode {
+    BoolExprNode condition;
     StatementNode body;
 
     public LoopNode (SourceLocator location){
@@ -8,13 +10,13 @@ public class LoopNode extends Node {
 
     
     
-    public LoopNode (SourceLocator location, BooleanNode condition,StatementNode body ){
+    public LoopNode (SourceLocator location, BoolExprNode condition,StatementNode body ){
     	super(location);
     	this.condition = condition;
     	this.body=body;
     }
     @Override
-    public void execute () {
+    public void execute () throws Exception {
         while (condition.evaluateBoolean()) body.execute();
         return;
     }

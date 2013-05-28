@@ -14,7 +14,7 @@ public class ArithExprNode extends ArithmeticExpressionNode {
 	/**
 	 * @param location location of the expression in the source
 	 */
-	protected MultiplicationNode(SourceLocator location) {
+	protected ArithExprNode(SourceLocator location) {
 		super(location);
 	}
 	

@@ -13,6 +13,6 @@ public abstract class StatementNode extends Node {
 		super(location);
 	}
 	
-	public abstract void execute();
+	public abstract void execute() throws Exception;
 
 }
