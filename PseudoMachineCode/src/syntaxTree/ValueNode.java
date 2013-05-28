@@ -8,7 +8,7 @@ public class ValueNode extends ArithmeticExpressionNode {
 	protected ValueNode(SourceLocator location) {
 		super(location);
 	}
-	
+
 	/**
 	 * Constructor for identifiers as atomic expressions
 	 * @param location location of the identifier in the source

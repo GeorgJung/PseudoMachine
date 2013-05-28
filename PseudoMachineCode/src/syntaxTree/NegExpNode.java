@@ -19,8 +19,8 @@ public class NegExpNode extends ArithmeticExpressionNode {
 
 	/**
 	 * 
-	 * @param location
-	 * @param expression
+	 * @param location location in the source file
+	 * @param expression expression needed to be negated
 	 */
 	public NegExpNode(SourceLocator location,
 			ArithmeticExpressionNode expression) {

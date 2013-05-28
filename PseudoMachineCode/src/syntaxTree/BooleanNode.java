@@ -13,7 +13,7 @@ public class BooleanNode extends BooleanExpressionNode {
 	
 
 	/**
-	 * @param location
+	 * @param location location of the expression in the source
 	 */
 	protected BooleanNode(SourceLocator location) {
 		super(location);
@@ -21,11 +21,13 @@ public class BooleanNode extends BooleanExpressionNode {
 
 	/**
 	 * 
-	 * @param location
-	 * @param expression
+	 * @param location location of the expression in the source file
+	 * @param expression is the first operand
+	 * @param expression is the second operand
+	 * @param operator is the comparing operator
 	 */
 	public BooleanNode(SourceLocator location,
-			ArithmeticExpressionNode op1, ArithmeticExpressionNode op1, chat operator ) {
+			ArithmeticExpressionNode op1, ArithmeticExpressionNode op1, char operator ) {
 		super(location);
 		this.op1=op1;
 		this.op2=op2;
