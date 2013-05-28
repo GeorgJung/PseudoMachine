@@ -38,11 +38,11 @@ conditional returns [StatementNode n]: 'if' c = condition 'then' s = statement a
                                        n = new ConditionalNode(new SourceLocator(), $c.n, $s.n, $a.n);
                                      };
 
+iterative returns [StatementNode n]: 'while' c = condition 'do' s = statement 'loop' {
+                                     n = new IterativeNode(new SourceLocator(), $c.n, $s.n);
+                                   };
 
 
-
-
-iterative  : 'while' condition 'do' statement 'loop';
 print returns [StatementNode n] : 'print' (dataexpr | e = arithexpr) {n = new PrintNode(new SourceLocator(), $e.n);} 
                                                   | 'print' '"'ID'"' {System.out.println($ID.text);} ;
 read : 'read' idlist;
