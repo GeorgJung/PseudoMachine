@@ -6,13 +6,15 @@ options {
 
 @header {
 package parser;
-import java.util.HashMap; // TODO: get rid of this import
 import syntaxTree.*;
 }
 
+@lexer::header {
+package parser;
+}
+
 @members {
-/** Map variable name to Integer object holding concreteValue */
-HashMap memory = new HashMap();
+/** For declaration of member variables of the parser class PseudoGrammarParser */
 }
 
 algorithm  : 'algorithm' ID ('inputs' declist)? ('outputs' declist)? ('localvar' declist)? 'begin' statement  'end' ;
@@ -23,10 +25,19 @@ assign  : 'set' ID 'to' ID;
 assignlist  : assign ',' assignlist | assign ;
 decl  :  'number'ID (indexing)? | 'data' ID (indexing)? ;
 declist : decl (',' declist)? ;
-statement returns [StatementNode n] : conditional morestatement | iterative morestatement | read morestatement | invocation morestatement | print morestatement | assignment morestatement { n = null; };
+
+statement returns [StatementNode n] : ( c = conditional { n = $c.n; }
+                                      | l = iterative { n = $l.n; }
+                                      | r = read { n = null; } // TODO: placeholder
+                                      | i = invocation { n = null; } // TODO: placeholder
+                                      | p = print { n = null; } // TODO: placeholder
+                                      | a = assignment { n = null; } ) // TODO: placeholder
+                                      (';' s = statement {
+                                          m = n.clone();
+                                          n = new SequentialNode(new SourceLocator(), m, $s.n);
+                                        } )? ;
 
 assignment returns [StatementNode n] : 'set' ID (index)? 'to' ( e = arithexpr | dataexpr) { n = new AssignmentNode(new SourceLocator(), $ID.text, $e.n)} ; 
-morestatement : ';' statement | ; 
 // Remember to write about the necessity of left-factorizing the mutually left-recursive setting of having the sequential as a control flow construct as theoretically sound. Rule: "sequential : statement  | morestatement ;"
 
 
