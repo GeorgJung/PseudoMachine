@@ -6,7 +6,7 @@ options {
 
 @header {
 package parser;
-import syntaxTree.*;
+import pseudoTree.*;
 }
 
 @lexer::header {
@@ -64,71 +64,84 @@ invocation  : 'run' ID 'inputs' assignlist 'outputs' assignlist 'done';
 
 
 
-condition returns [BooleanExpressionNode n] : e = disjunction { n = $e.n } ;
+condition returns [BooleanExpressionNode n] throws CloneNotSupportedException, Exception :
+        e = disjunction { n = $e.n; } ;
 
-disjunction returns [BooleanExpressionNode n] : e = conjunction { n = $e.n; }
-                                                ( 'or ' b = disjunction {
-                                                  m = n.clone();
-                                                  n = new DisjunctionNode(new SourceLocator, $e.n, $b.n);
-                                                } )? ;
+disjunction returns [BooleanExpressionNode n] throws CloneNotSupportedException, Exception :
+        e = conjunction { n = $e.n; }
+        ( 'or ' b = disjunction {
+            BooleanExpressionNode m = (BooleanExpressionNode) n.clone();
+            n = new DisjunctionNode(new SourceLocator(), $e.n, $b.n);
+            } )? ;
 
-conjunction returns [BooleanExpressionNode n]  : e = negation { n = $e.n; }
-                                                 ( 'and' b = negation {
-                                                   m = n.clone();
-                                                   n = new ConjunctionNode(new SourceLocator, $e.n, $b.n);
-                                                 } )? ;
+conjunction returns [BooleanExpressionNode n] throws CloneNotSupportedException, Exception :
+        e = negation { n = $e.n; }
+        ( 'and' b = negation {
+            BooleanExpressionNode m = (BooleanExpressionNode) n.clone();
+            n = new ConjunctionNode(new SourceLocator(), $e.n, $b.n);
+            } )? ;
 
-negation returns [BooleanExpressionNode n] : 'not' e = atom {
-                                               n = new NegationNode(new SourceLocator(), $e.n);
-                                             }
-                                           | e = atom { n = $e.n; } ;
+negation returns [BooleanExpressionNode n] throws CloneNotSupportedException, Exception :
+        'not' e = atom {
+          n = new NegationNode(new SourceLocator(), $e.n);
+          }
+      | e = atom { n = $e.n; } ;
 
-atom returns [BooleanExpressionNode n] options { backtrack = true ; } : e = boolexpr { n = $e.n; }
-                                                                      | '(' e = disjunction { n = $e.n; } ')' ;
+atom returns [BooleanExpressionNode n] throws CloneNotSupportedException, Exception
+     options { backtrack = true ; } :
+        e = boolexpr { n = $e.n; }
+      | '(' e = disjunction { n = $e.n; } ')' ;
 
-boolexpr returns [BooleanExpressionNode n] : op1 = arithexpr
-                                                  ( '=' op2 = arithexpr {
-                                                    n = new BoolExprNode(new SourceLocator(),$op1.n, $op2.n,'=');
-                                                  }
-                                                  | '<' op2 = arithexpr {
-                                                    n = new BoolExprNode(new SourceLocator(),$op1.n, $op2.n,'<');
-                                                  }
-                                                  | '>' op2 = arithexpr {
-                                                    n = new BoolExprNode(new SourceLocator(),$op1.n, $op2.n,'>');
-                                                  } 
-                                                  | '<=' op2 = arithexpr {
-                                                    n = new BoolExprNode(new SourceLocator(),$op1.n, $op2.n,'l');
-                                                  }
-                                                  | '>='op2 = arithexpr {
-                                                    n = new BoolExprNode(new SourceLocator(),$op1.n, $op2.n,'g');
-                                                  } );
+boolexpr returns [BooleanExpressionNode n] throws CloneNotSupportedException, Exception :
+        'true' { n = new BoolExprNode(new SourceLocator(), true); }
+      | 'false' { n = new BoolExprNode(new SourceLocator(), false); }
+      | op1 = arithexpr
+        ( '=' op2 = arithexpr {
+            n = new BoolExprNode(new SourceLocator(),$op1.n, $op2.n,Node.CompOp.EQ);
+            }
+        | '<' op2 = arithexpr {
+            n = new BoolExprNode(new SourceLocator(),$op1.n, $op2.n,Node.CompOp.LT);
+            }
+        | '>' op2 = arithexpr {
+            n = new BoolExprNode(new SourceLocator(),$op1.n, $op2.n,Node.CompOp.GT);
+            } 
+        | '<=' op2 = arithexpr {
+            n = new BoolExprNode(new SourceLocator(),$op1.n, $op2.n,Node.CompOp.LEQ);
+            }
+        | '>='op2 = arithexpr {
+            n = new BoolExprNode(new SourceLocator(),$op1.n, $op2.n,Node.CompOp.GEQ);
+            } );
 
-arithexpr returns [ArithmeticExpressionNode n] : e = multiplication { n = $e.n; } 
-                                                 ( '+' s = arithexpr {
-                                                     m = n.clone();
-                                                     n = new ArithExprNode(new SourceLocator(), m, s, '+');
-                                                   }
-                                                 | '-' s = arithexpr {
-                                                     m = n.clone();
-                                                     n = new ArithExprNode(new SourceLocator(), m, s, '-');
-                                                   } )? ;
+arithexpr returns [ArithmeticExpressionNode n] throws CloneNotSupportedException, Exception :
+        e = multiplication { n = $e.n; } 
+        ( '+' s = arithexpr {
+            ArithmeticExpressionNode m = (ArithmeticExpressionNode) n.clone();
+            n = new ArithExprNode(new SourceLocator(), m, s, Node.AddOp.PLUS);
+            }
+        | '-' s = arithexpr {
+            ArithmeticExpressionNode m = (ArithmeticExpressionNode) n.clone();
+            n = new ArithExprNode(new SourceLocator(), m, s, Node.AddOp.MINUS);
+            } )? ;
 
-multiplication returns [ArithmeticExpressionNode n] : e = negexp { n = $e.n; } 
-                                                      ( '*' f = multiplication {
-                                                          m = n.clone() ;
-                                                          n = new MultiplicationNode(new SourceLocator(), m, f, '*');
-                                                        }
-                                                      | '/' q = multiplication {
-                                                          m = n.clone() ;
-                                                          n = new MultiplicationNode(new SourceLocator(), m, q, '/');
-                                                        } )? ;
+multiplication returns [ArithmeticExpressionNode n] throws CloneNotSupportedException, Exception :
+        e = negexp { n = $e.n; } 
+        ( '*' f = multiplication {
+            ArithmeticExpressionNode m = (ArithmeticExpressionNode) n.clone();
+            n = new MultiplicationNode(new SourceLocator(), m, f, Node.MultOp.TIMES);
+            }
+        | '/' q = multiplication {
+            ArithmeticExpressionNode m = (ArithmeticExpressionNode) n.clone();
+            n = new MultiplicationNode(new SourceLocator(), m, q, Node.MultOp.DIV);
+            } )? ;
 
-negexp returns [ArithemticExpressionNode n]: '-' e = value { n = new NegExpNode (new SourceLocator(), $e.n); }
-                                           | '(' e = arithexpr ')' { n = $e.n; }
-                                           | e = value { n = $e.n; } ;
+negexp returns [ArithmeticExpressionNode n] throws Exception :
+        '-' e = value { n = new NegExpNode (new SourceLocator(), $e.n); }
+      | '(' e = arithexpr ')' { n = $e.n; }
+      | e = value { n = $e.n; } ;
 
-value returns [AritmeticExpressionNode n] : ID  { n = new ValueNode(new SourceLocator(), $ID.text); }(index)?
-                                          | INTEGER { n = new ValueNode(new SourceLocator(), Integer.parseInt($INTEGER.text);} ;
+value returns [ArithmeticExpressionNode n] throws Exception :
+        ID  { n = new ValueNode(new SourceLocator(), $ID.text); }(index)?
+      | INTEGER { n = new ValueNode(new SourceLocator(), Integer.parseInt($INTEGER.text)); } ;
 
 dataexpr : ' " '  ' " ';
 
