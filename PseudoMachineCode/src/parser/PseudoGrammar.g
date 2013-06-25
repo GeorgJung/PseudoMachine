@@ -88,7 +88,7 @@ negation returns [BooleanExpressionNode n] throws CloneNotSupportedException, Ex
       | e = atom { n = $e.n; } ;
 
 atom returns [BooleanExpressionNode n] throws CloneNotSupportedException, Exception
-     options { backtrack = true ; } :
+    options { backtrack = true ; } :
         e = boolexpr { n = $e.n; }
       | '(' e = disjunction { n = $e.n; } ')' ;
 
